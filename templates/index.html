@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}All Competitions{% endblock %}
+
+{% block body %}
+<main class="page">
+    <header class="hero">
+        <p class="kicker">WCA Tracker</p>
+        <h1>Rubik's Cube Competitions</h1>
+        <p class="subtitle">Browse all events currently loaded from your SQLAlchemy database.</p>
+        <button class="seed-button" id="seed-btn" type="button">Seed demo competitions</button>
+    </header>
+
+    <section class="panel" aria-label="Competitions list">
+        <div class="panel-head">
+            <h2>All Competitions</h2>
+            <span class="count">{{ competitions|length }} total</span>
+        </div>
+
+        {% if competitions %}
+        <div class="table-wrap">
+            <table class="competition-table">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Competition</th>
+                        <th scope="col">City</th>
+                        <th scope="col">State</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for competition in competitions %}
+                    <tr>
+                        <td>{{ competition.id }}</td>
+                        <td>{{ competition.name }}</td>
+                        <td>{{ competition.city }}</td>
+                        <td>{{ competition.state }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h3>No competitions yet</h3>
+            <p>Use the seed button above to load sample events and refresh this page.</p>
+        </div>
+        {% endif %}
+    </section>
+</main>
+
+<script>
+    const seedBtn = document.getElementById("seed-btn");
+
+    seedBtn.addEventListener("click", async () => {
+        seedBtn.disabled = true;
+
+        try {
+            const response = await fetch("/seed", {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Request failed");
+            }
+
+            const data = await response.json();
+            window.setTimeout(() => window.location.reload(), 500);
+        } catch (error) {
+            seedBtn.disabled = false;
+        }
+    });
+</script>
+{% endblock %}

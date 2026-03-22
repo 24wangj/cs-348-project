@@ -1,0 +1,211 @@
+:root {
+    --bg-ink: #2a0d14;
+    --bg-night: #5a1627;
+    --bg-lime: #c5314a;
+    --text-main: #fff3f5;
+    --text-muted: #ffdce2;
+    --panel-bg: rgba(64, 14, 25, 0.72);
+    --card-bg: rgba(98, 23, 39, 0.8);
+    --card-border: rgba(255, 188, 198, 0.34);
+    --accent: #ff9f73;
+    --accent-2: #ffc9be;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text-main);
+    font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif;
+    background:
+        radial-gradient(circle at 15% 12%, rgba(255, 172, 117, 0.34), transparent 28%),
+        radial-gradient(circle at 82% 25%, rgba(255, 110, 136, 0.3), transparent 30%),
+        linear-gradient(140deg, var(--bg-ink), var(--bg-night) 42%, #7f2035 72%, var(--bg-lime));
+    padding: 2.25rem 1rem 3rem;
+}
+
+.page {
+    width: min(980px, 96vw);
+    margin: 0 auto;
+    display: grid;
+    gap: 1.2rem;
+    animation: page-in 520ms ease;
+}
+
+.hero {
+    text-align: left;
+    padding: 1.8rem;
+    border-radius: 20px;
+    background: linear-gradient(160deg, rgba(53, 11, 21, 0.86), rgba(120, 31, 49, 0.68));
+    border: 1px solid rgba(255, 168, 124, 0.4);
+    backdrop-filter: blur(4px);
+}
+
+.kicker {
+    margin: 0;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+
+h1 {
+    margin: 0.35rem 0;
+    font-size: clamp(1.9rem, 3.8vw, 2.75rem);
+    line-height: 1.1;
+}
+
+.subtitle {
+    margin: 0.15rem 0 1.1rem;
+    color: var(--text-muted);
+    max-width: 62ch;
+}
+
+.seed-button {
+    display: inline-block;
+    border: 0;
+    cursor: pointer;
+    color: #2a0b12;
+    background: linear-gradient(90deg, var(--accent), #ffc084);
+    text-decoration: none;
+    font-weight: 700;
+    padding: 0.58rem 0.95rem;
+    border-radius: 999px;
+}
+
+.seed-button:hover {
+    transform: translateY(-1px);
+}
+
+.seed-button:disabled {
+    opacity: 0.68;
+    cursor: not-allowed;
+}
+
+.panel {
+    background: var(--panel-bg);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 170, 184, 0.36);
+    padding: 1.2rem;
+}
+
+.panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+h2 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.count {
+    color: var(--accent-2);
+    font-weight: 700;
+    font-size: 0.92rem;
+}
+
+.table-wrap {
+    overflow-x: auto;
+    border-radius: 14px;
+    border: 1px solid var(--card-border);
+}
+
+.competition-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 620px;
+    background: rgba(95, 20, 37, 0.35);
+    animation: card-in 420ms ease;
+}
+
+.competition-table thead {
+    background: linear-gradient(90deg, rgba(255, 159, 115, 0.3), rgba(255, 99, 132, 0.18));
+}
+
+.competition-table th,
+.competition-table td {
+    text-align: left;
+    padding: 0.75rem 0.85rem;
+    border-bottom: 1px solid rgba(255, 188, 198, 0.24);
+}
+
+.competition-table th {
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #ffd4cc;
+}
+
+.competition-table tbody tr:hover {
+    background: rgba(255, 177, 165, 0.14);
+}
+
+.competition-table td:first-child {
+    color: #ffc0cb;
+    font-weight: 700;
+}
+
+.competition-table td:nth-child(2) {
+    font-weight: 700;
+}
+
+h3 {
+    margin: 0.35rem 0;
+    font-size: 1rem;
+}
+
+.empty-state {
+    border: 1px dashed rgba(255, 191, 202, 0.4);
+    border-radius: 14px;
+    padding: 1rem;
+    text-align: center;
+}
+
+@keyframes page-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes card-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.99);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 640px) {
+    body {
+        padding: 1.1rem 0.7rem 1.7rem;
+    }
+
+    .hero,
+    .panel {
+        border-radius: 14px;
+    }
+
+    .competition-table th,
+    .competition-table td {
+        padding: 0.62rem 0.66rem;
+        font-size: 0.9rem;
+    }
+}
