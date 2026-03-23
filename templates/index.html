@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}All Competitions{% endblock %}
+{% block title %}All Competitors{% endblock %}
 
 {% block body %}
 <main class="page">
     <header class="hero">
         <p class="kicker">Unofficial WCA Tracker</p>
-        <h1>Rubik's Cube Competitions</h1>
-        <p class="subtitle">Add, edit, delete events currently loaded from the database.</p>
+        <h1>Rubik's Cube Competitors</h1>
+        <p class="subtitle">Add, edit, and delete competitors currently loaded from the database.</p>
         <div class="hero-actions">
-            <button class="seed-button" id="seed-btn" type="button">Seed demo competitions</button>
-            <button class="add-button" id="add-btn" type="button">Add competition</button>
+            <button class="seed-button" id="seed-btn" type="button">Seed demo competitors</button>
+            <button class="add-button" id="add-btn" type="button">Add competitor</button>
         </div>
 
-        <form class="add-form hidden" id="add-form" aria-label="Add competition form">
+        <form class="add-form hidden" id="add-form" aria-label="Add competitor form">
             <label>
-                Competition Name
-                <input id="add-name" type="text" placeholder="Spring Open 2026" required>
+                Competitor Name
+                <input id="add-name" type="text" placeholder="Ava Kim" required>
             </label>
             <label>
                 City
@@ -26,43 +26,36 @@
                 State
                 <input id="add-state" type="text" placeholder="Indiana" required>
             </label>
-            <label>
-                Date
-                <input id="add-date" type="text" placeholder="1999-12-01" required>
-            </label>
             <div class="form-actions">
                 <button class="submit-button" type="submit">Save</button>
             </div>
         </form>
     </header>
 
-    <section class="panel" aria-label="Competitions list">
+    <section class="panel" aria-label="Competitors list">
         <div class="panel-head">
-            <h2>All Competitions</h2>
+            <h2>All Competitors</h2>
         </div>
 
-        {% if competitions %}
+        {% if competitors %}
         <div class="table-wrap">
-            <table class="competition-table">
+            <table class="competitor-table">
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
-                        <th scope="col">Competition</th>
+                        <th scope="col">Competitor</th>
                         <th scope="col">City</th>
                         <th scope="col">State</th>
-                        <th scope="col">Date</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for competition in competitions %}
-                    <tr class="competition-row" data-id="{{ competition.id }}" data-name="{{ competition.name }}"
-                        data-city="{{ competition.city }}" data-state="{{ competition.state }}"
-                        data-date="{{ competition.date }}">
-                        <td>{{ competition.id }}</td>
-                        <td>{{ competition.name }}</td>
-                        <td>{{ competition.city }}</td>
-                        <td>{{ competition.state }}</td>
-                        <td>{{ competition.date }}</td>
+                    {% for competitor in competitors %}
+                    <tr class="competitor-row" data-id="{{ competitor.id }}" data-name="{{ competitor.name }}"
+                        data-city="{{ competitor.city }}" data-state="{{ competitor.state }}">
+                        <td>{{ competitor.id }}</td>
+                        <td>{{ competitor.name }}</td>
+                        <td>{{ competitor.city }}</td>
+                        <td>{{ competitor.state }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -70,17 +63,17 @@
         </div>
 
         <section class="delete-panel hidden" id="delete-panel" aria-live="polite">
-            <p class="delete-title">Selected competition</p>
-            <p id="selected-competition">Click any competition row to manage it.</p>
+            <p class="delete-title">Selected competitor</p>
+            <p id="selected-competitor">Click any competitor row to manage it.</p>
             <div class="delete-actions">
-                <button class="delete-button" id="delete-btn" type="button" disabled>Delete competition</button>
+                <button class="delete-button" id="delete-btn" type="button" disabled>Delete competitor</button>
                 <button class="cancel-button" id="cancel-delete-btn" type="button" disabled>Cancel</button>
             </div>
         </section>
         {% else %}
         <div class="empty-state">
-            <h3>No competitions yet</h3>
-            <p>Use the seed button above to load sample events and refresh this page.</p>
+            <h3>No competitors yet</h3>
+            <p>Use the seed button above to load sample competitors and refresh this page.</p>
         </div>
         {% endif %}
     </section>
@@ -91,11 +84,11 @@
     const addBtn = document.getElementById("add-btn");
     const addForm = document.getElementById("add-form");
     const deletePanel = document.getElementById("delete-panel");
-    const selectedCompetition = document.getElementById("selected-competition");
+    const selectedCompetitor = document.getElementById("selected-competitor");
     const deleteBtn = document.getElementById("delete-btn");
     const cancelDeleteBtn = document.getElementById("cancel-delete-btn");
 
-    let selectedCompetitionId = null;
+    let selectedCompetitorId = null;
 
     seedBtn.addEventListener("click", async () => {
         seedBtn.disabled = true;
@@ -123,13 +116,13 @@
         addForm.classList.toggle("hidden");
     });
 
-    function bindCompetitionRow(row) {
+    function bindCompetitorRow(row) {
         row.addEventListener("click", () => {
-            document.querySelectorAll(".competition-row").forEach((r) => r.classList.remove("row-selected"));
+            document.querySelectorAll(".competitor-row").forEach((r) => r.classList.remove("row-selected"));
             row.classList.add("row-selected");
 
-            selectedCompetitionId = row.dataset.id;
-            selectedCompetition.textContent = `${row.dataset.name} (${row.dataset.city}, ${row.dataset.state}, ${row.dataset.date})`;
+            selectedCompetitorId = row.dataset.id;
+            selectedCompetitor.textContent = `${row.dataset.name} (${row.dataset.city}, ${row.dataset.state})`;
             deletePanel.classList.remove("hidden");
             deleteBtn.disabled = false;
             cancelDeleteBtn.disabled = false;
@@ -142,17 +135,15 @@
         const name = document.getElementById("add-name").value.trim();
         const city = document.getElementById("add-city").value.trim();
         const state = document.getElementById("add-state").value.trim();
-        const date = document.getElementById("add-date").value.trim();
 
         const payload = {
             name: name,
             city: city,
-            state: state,
-            date: date
+            state: state
         };
 
         try {
-            const response = await fetch("/add_comp", {
+            const response = await fetch("/add_competitor", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -169,20 +160,20 @@
         }
     });
 
-    document.querySelectorAll(".competition-row").forEach((row) => bindCompetitionRow(row));
+    document.querySelectorAll(".competitor-row").forEach((row) => bindCompetitorRow(row));
 
     deleteBtn?.addEventListener("click", async () => {
-        if (!selectedCompetitionId) {
+        if (!selectedCompetitorId) {
             return;
         }
 
         try {
-            const response = await fetch("/delete_comp", {
+            const response = await fetch("/delete_competitor", {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ id: selectedCompetitionId })
+                body: JSON.stringify({ id: selectedCompetitorId })
             });
 
             if (!response.ok) {
@@ -195,11 +186,11 @@
     });
 
     cancelDeleteBtn?.addEventListener("click", () => {
-        selectedCompetitionId = null;
+        selectedCompetitorId = null;
         deletePanel.classList.add("hidden");
         deleteBtn.disabled = true;
         cancelDeleteBtn.disabled = true;
-        document.querySelectorAll(".competition-row").forEach((r) => r.classList.remove("row-selected"));
+        document.querySelectorAll(".competitor-row").forEach((r) => r.classList.remove("row-selected"));
     });
 </script>
 {% endblock %}

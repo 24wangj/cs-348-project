@@ -1,6 +1,4 @@
 
-import datetime
-
 from flask import Flask, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
@@ -9,61 +7,58 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
-class Competition(db.Model):
+class Competitor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
     city = db.Column(db.String(150), nullable=False)
     state = db.Column(db.String(150), nullable=False)
-    date = db.Column(db.Date)
 
     def __repr__(self):
-        return f"<Competition {self.id}: {self.name}>"
+        return f"<Competitor {self.id}: {self.name}>"
 
 @app.route('/')
 def index():
-    competitions = Competition.query.order_by(Competition.id.asc()).all()
-    return render_template('index.html', competitions=competitions)
+    competitors = Competitor.query.order_by(Competitor.id.asc()).all()
+    return render_template('index.html', competitors=competitors)
 
 
 @app.route('/seed', methods=['GET', 'POST'])
 def seed():
-    db.session.query(Competition).delete()
-    if Competition.query.count() == 0:
-        db.session.add(Competition(name='Best in West Lafayette', city='French Lick', state='Indiana', date=datetime.date.today()))
-        db.session.add(Competition(name='Holy Airball', city='Columbus', state='Ohio', date=datetime.date.today()))
+    db.session.query(Competitor).delete()
+    if Competitor.query.count() == 0:
+        db.session.add(Competitor(name='Luke Carrot', city='West Lafayette', state='Indiana'))
+        db.session.add(Competitor(name='Matty Hiroto Inaba', city='Columbus', state='Ohio'))
+        db.session.add(Competitor(name='Lil Bro', city='Columbus', state='Indiana'))
         db.session.commit()
 
     if request.method == 'POST':
-        total = Competition.query.count()
+        total = Competitor.query.count()
         return jsonify({"total": total})
 
-    return 'Seed complete. Visit / to view competitions.'
+    return 'Seed complete. Visit / to view competitors.'
 
-@app.route('/add_comp', methods=['POST'])
-def add_comp():
+@app.route('/add_competitor', methods=['POST'])
+def add_competitor():
     data = request.get_json() or {}
-    competition_date = datetime.datetime.strptime(data["date"], "%Y-%m-%d").date()
-    competition = Competition(
+    competitor = Competitor(
         name=data["name"],
         city=data["city"],
         state=data["state"],
-        date=competition_date,
     )
-    db.session.add(competition)
+    db.session.add(competitor)
     db.session.commit()
     return jsonify({
-        "id": competition.id,
-        "name": competition.name,
-        "city": competition.city,
-        "state": competition.state,
-        "date": competition.date.isoformat() if competition.date else "",
+        "id": competitor.id,
+        "name": competitor.name,
+        "city": competitor.city,
+        "state": competitor.state,
     }), 201
 
-@app.route('/delete_comp', methods=['DELETE'])
-def delete_comp():
+@app.route('/delete_competitor', methods=['DELETE'])
+def delete_competitor():
     data = request.get_json() or {}
-    competition_id = data["id"]
-    db.session.delete(db.session.query(Competition).filter(Competition.id == competition_id).first())
+    competitor_id = data["id"]
+    db.session.delete(db.session.query(Competitor).filter(Competitor.id == competitor_id).first())
     db.session.commit()
 
     return jsonify({}), 201

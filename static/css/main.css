@@ -180,7 +180,7 @@ h2 {
     border: 1px solid var(--card-border);
 }
 
-.competition-table {
+.competitor-table {
     width: 100%;
     border-collapse: collapse;
     min-width: 620px;
@@ -188,39 +188,39 @@ h2 {
     animation: card-in 420ms ease;
 }
 
-.competition-table thead {
+.competitor-table thead {
     background: rgba(83, 106, 131, 0.42);
 }
 
-.competition-table th,
-.competition-table td {
+.competitor-table th,
+.competitor-table td {
     text-align: left;
     padding: 0.75rem 0.85rem;
     border-bottom: 1px solid rgba(130, 153, 180, 0.3);
 }
 
-.competition-table th {
+.competitor-table th {
     font-size: 0.8rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: #c4d4e8;
 }
 
-.competition-table tbody tr:hover {
+.competitor-table tbody tr:hover {
     background: rgba(143, 182, 223, 0.16);
     cursor: pointer;
 }
 
-.competition-row.row-selected {
+.competitor-row.row-selected {
     background: rgba(143, 182, 223, 0.24);
 }
 
-.competition-table td:first-child {
+.competitor-table td:first-child {
     color: #a8c7ea;
     font-weight: 700;
 }
 
-.competition-table td:nth-child(2) {
+.competitor-table td:nth-child(2) {
     font-weight: 700;
 }
 
@@ -320,8 +320,8 @@ h3 {
         border-radius: 14px;
     }
 
-    .competition-table th,
-    .competition-table td {
+    .competitor-table th,
+    .competitor-table td {
         padding: 0.62rem 0.66rem;
         font-size: 0.9rem;
     }
