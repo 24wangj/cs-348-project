@@ -5,16 +5,40 @@
 {% block body %}
 <main class="page">
     <header class="hero">
-        <p class="kicker">WCA Tracker</p>
+        <p class="kicker">Unofficial WCA Tracker</p>
         <h1>Rubik's Cube Competitions</h1>
-        <p class="subtitle">Browse all events currently loaded from your SQLAlchemy database.</p>
-        <button class="seed-button" id="seed-btn" type="button">Seed demo competitions</button>
+        <p class="subtitle">Add, edit, delete events currently loaded from the database.</p>
+        <div class="hero-actions">
+            <button class="seed-button" id="seed-btn" type="button">Seed demo competitions</button>
+            <button class="add-button" id="add-btn" type="button">Add competition</button>
+        </div>
+
+        <form class="add-form hidden" id="add-form" aria-label="Add competition form">
+            <label>
+                Competition Name
+                <input id="add-name" type="text" placeholder="Spring Open 2026" required>
+            </label>
+            <label>
+                City
+                <input id="add-city" type="text" placeholder="Columbus" required>
+            </label>
+            <label>
+                State
+                <input id="add-state" type="text" placeholder="Indiana" required>
+            </label>
+            <label>
+                Date
+                <input id="add-date" type="text" placeholder="1999-12-01" required>
+            </label>
+            <div class="form-actions">
+                <button class="submit-button" type="submit">Save</button>
+            </div>
+        </form>
     </header>
 
     <section class="panel" aria-label="Competitions list">
         <div class="panel-head">
             <h2>All Competitions</h2>
-            <span class="count">{{ competitions|length }} total</span>
         </div>
 
         {% if competitions %}
@@ -26,20 +50,33 @@
                         <th scope="col">Competition</th>
                         <th scope="col">City</th>
                         <th scope="col">State</th>
+                        <th scope="col">Date</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for competition in competitions %}
-                    <tr>
+                    <tr class="competition-row" data-id="{{ competition.id }}" data-name="{{ competition.name }}"
+                        data-city="{{ competition.city }}" data-state="{{ competition.state }}"
+                        data-date="{{ competition.date }}">
                         <td>{{ competition.id }}</td>
                         <td>{{ competition.name }}</td>
                         <td>{{ competition.city }}</td>
                         <td>{{ competition.state }}</td>
+                        <td>{{ competition.date }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+
+        <section class="delete-panel hidden" id="delete-panel" aria-live="polite">
+            <p class="delete-title">Selected competition</p>
+            <p id="selected-competition">Click any competition row to manage it.</p>
+            <div class="delete-actions">
+                <button class="delete-button" id="delete-btn" type="button" disabled>Delete competition</button>
+                <button class="cancel-button" id="cancel-delete-btn" type="button" disabled>Cancel</button>
+            </div>
+        </section>
         {% else %}
         <div class="empty-state">
             <h3>No competitions yet</h3>
@@ -51,6 +88,14 @@
 
 <script>
     const seedBtn = document.getElementById("seed-btn");
+    const addBtn = document.getElementById("add-btn");
+    const addForm = document.getElementById("add-form");
+    const deletePanel = document.getElementById("delete-panel");
+    const selectedCompetition = document.getElementById("selected-competition");
+    const deleteBtn = document.getElementById("delete-btn");
+    const cancelDeleteBtn = document.getElementById("cancel-delete-btn");
+
+    let selectedCompetitionId = null;
 
     seedBtn.addEventListener("click", async () => {
         seedBtn.disabled = true;
@@ -72,6 +117,89 @@
         } catch (error) {
             seedBtn.disabled = false;
         }
+    });
+
+    addBtn.addEventListener("click", () => {
+        addForm.classList.toggle("hidden");
+    });
+
+    function bindCompetitionRow(row) {
+        row.addEventListener("click", () => {
+            document.querySelectorAll(".competition-row").forEach((r) => r.classList.remove("row-selected"));
+            row.classList.add("row-selected");
+
+            selectedCompetitionId = row.dataset.id;
+            selectedCompetition.textContent = `${row.dataset.name} (${row.dataset.city}, ${row.dataset.state}, ${row.dataset.date})`;
+            deletePanel.classList.remove("hidden");
+            deleteBtn.disabled = false;
+            cancelDeleteBtn.disabled = false;
+        });
+    }
+
+    addForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const name = document.getElementById("add-name").value.trim();
+        const city = document.getElementById("add-city").value.trim();
+        const state = document.getElementById("add-state").value.trim();
+        const date = document.getElementById("add-date").value.trim();
+
+        const payload = {
+            name: name,
+            city: city,
+            state: state,
+            date: date
+        };
+
+        try {
+            const response = await fetch("/add_comp", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error("Request failed");
+            }
+            window.location.reload();
+        } catch (error) {
+            console.log(error);
+        }
+    });
+
+    document.querySelectorAll(".competition-row").forEach((row) => bindCompetitionRow(row));
+
+    deleteBtn?.addEventListener("click", async () => {
+        if (!selectedCompetitionId) {
+            return;
+        }
+
+        try {
+            const response = await fetch("/delete_comp", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ id: selectedCompetitionId })
+            });
+
+            if (!response.ok) {
+                throw new Error("Request failed");
+            }
+            window.location.reload();
+        } catch (error) {
+            console.log(error);
+        }
+    });
+
+    cancelDeleteBtn?.addEventListener("click", () => {
+        selectedCompetitionId = null;
+        deletePanel.classList.add("hidden");
+        deleteBtn.disabled = true;
+        cancelDeleteBtn.disabled = true;
+        document.querySelectorAll(".competition-row").forEach((r) => r.classList.remove("row-selected"));
     });
 </script>
 {% endblock %}

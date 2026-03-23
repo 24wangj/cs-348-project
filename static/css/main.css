@@ -1,14 +1,14 @@
 :root {
-    --bg-ink: #2a0d14;
-    --bg-night: #5a1627;
-    --bg-lime: #c5314a;
-    --text-main: #fff3f5;
-    --text-muted: #ffdce2;
-    --panel-bg: rgba(64, 14, 25, 0.72);
-    --card-bg: rgba(98, 23, 39, 0.8);
-    --card-border: rgba(255, 188, 198, 0.34);
-    --accent: #ff9f73;
-    --accent-2: #ffc9be;
+    --bg-ink: #0f141b;
+    --bg-night: #1a232f;
+    --bg-lime: #2b3f56;
+    --text-main: #e9eef5;
+    --text-muted: #b7c3d3;
+    --panel-bg: rgba(22, 30, 40, 0.76);
+    --card-bg: rgba(26, 36, 49, 0.82);
+    --card-border: rgba(130, 153, 180, 0.35);
+    --accent: #8fb6df;
+    --accent-2: #a8c2de;
 }
 
 * {
@@ -20,10 +20,7 @@ body {
     min-height: 100vh;
     color: var(--text-main);
     font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif;
-    background:
-        radial-gradient(circle at 15% 12%, rgba(255, 172, 117, 0.34), transparent 28%),
-        radial-gradient(circle at 82% 25%, rgba(255, 110, 136, 0.3), transparent 30%),
-        linear-gradient(140deg, var(--bg-ink), var(--bg-night) 42%, #7f2035 72%, var(--bg-lime));
+    background: #131b24;
     padding: 2.25rem 1rem 3rem;
 }
 
@@ -39,8 +36,8 @@ body {
     text-align: left;
     padding: 1.8rem;
     border-radius: 20px;
-    background: linear-gradient(160deg, rgba(53, 11, 21, 0.86), rgba(120, 31, 49, 0.68));
-    border: 1px solid rgba(255, 168, 124, 0.4);
+    background: #1c2835;
+    border: 1px solid rgba(143, 182, 223, 0.35);
     backdrop-filter: blur(4px);
 }
 
@@ -62,15 +59,21 @@ h1 {
 .subtitle {
     margin: 0.15rem 0 1.1rem;
     color: var(--text-muted);
-    max-width: 62ch;
+    max-width: 80ch;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
 }
 
 .seed-button {
     display: inline-block;
     border: 0;
     cursor: pointer;
-    color: #2a0b12;
-    background: linear-gradient(90deg, var(--accent), #ffc084);
+    color: #0f1a25;
+    background: #9fbddc;
     text-decoration: none;
     font-weight: 700;
     padding: 0.58rem 0.95rem;
@@ -81,15 +84,74 @@ h1 {
     transform: translateY(-1px);
 }
 
+.add-button {
+    border: 1px solid rgba(173, 198, 224, 0.55);
+    cursor: pointer;
+    color: #dbe6f3;
+    background: rgba(35, 49, 66, 0.76);
+    font-weight: 700;
+    padding: 0.58rem 0.95rem;
+    border-radius: 999px;
+}
+
+.add-button:hover {
+    background: rgba(47, 64, 84, 0.85);
+}
+
 .seed-button:disabled {
     opacity: 0.68;
     cursor: not-allowed;
 }
 
+.add-form {
+    margin-top: 0.9rem;
+    display: grid;
+    gap: 0.65rem;
+    padding: 0.85rem;
+    border: 1px solid rgba(151, 175, 201, 0.42);
+    border-radius: 12px;
+    background: rgba(28, 40, 55, 0.54);
+    max-width: 640px;
+}
+
+.add-form label {
+    display: grid;
+    gap: 0.25rem;
+    font-weight: 600;
+    color: #d2dfef;
+    font-size: 0.92rem;
+}
+
+.add-form input {
+    border: 1px solid rgba(146, 168, 193, 0.45);
+    background: rgba(14, 21, 30, 0.72);
+    color: var(--text-main);
+    border-radius: 8px;
+    padding: 0.54rem 0.6rem;
+}
+
+.submit-button {
+    border: 0;
+    cursor: pointer;
+    color: #0f1a25;
+    background: #adc5de;
+    font-weight: 700;
+    padding: 0.55rem 0.9rem;
+    border-radius: 8px;
+}
+
+.form-actions {
+    margin-top: 0.2rem;
+}
+
+.hidden {
+    display: none;
+}
+
 .panel {
     background: var(--panel-bg);
     border-radius: 20px;
-    border: 1px solid rgba(255, 170, 184, 0.36);
+    border: 1px solid rgba(130, 153, 180, 0.38);
     padding: 1.2rem;
 }
 
@@ -106,10 +168,10 @@ h2 {
     font-size: 1.25rem;
 }
 
-.count {
-    color: var(--accent-2);
-    font-weight: 700;
-    font-size: 0.92rem;
+.panel-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
 }
 
 .table-wrap {
@@ -122,34 +184,39 @@ h2 {
     width: 100%;
     border-collapse: collapse;
     min-width: 620px;
-    background: rgba(95, 20, 37, 0.35);
+    background: rgba(28, 39, 53, 0.45);
     animation: card-in 420ms ease;
 }
 
 .competition-table thead {
-    background: linear-gradient(90deg, rgba(255, 159, 115, 0.3), rgba(255, 99, 132, 0.18));
+    background: rgba(83, 106, 131, 0.42);
 }
 
 .competition-table th,
 .competition-table td {
     text-align: left;
     padding: 0.75rem 0.85rem;
-    border-bottom: 1px solid rgba(255, 188, 198, 0.24);
+    border-bottom: 1px solid rgba(130, 153, 180, 0.3);
 }
 
 .competition-table th {
     font-size: 0.8rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #ffd4cc;
+    color: #c4d4e8;
 }
 
 .competition-table tbody tr:hover {
-    background: rgba(255, 177, 165, 0.14);
+    background: rgba(143, 182, 223, 0.16);
+    cursor: pointer;
+}
+
+.competition-row.row-selected {
+    background: rgba(143, 182, 223, 0.24);
 }
 
 .competition-table td:first-child {
-    color: #ffc0cb;
+    color: #a8c7ea;
     font-weight: 700;
 }
 
@@ -163,10 +230,60 @@ h3 {
 }
 
 .empty-state {
-    border: 1px dashed rgba(255, 191, 202, 0.4);
+    border: 1px dashed rgba(151, 175, 201, 0.46);
     border-radius: 14px;
     padding: 1rem;
     text-align: center;
+}
+
+.delete-panel {
+    margin-top: 0.9rem;
+    padding: 0.85rem;
+    border: 1px solid rgba(130, 153, 180, 0.4);
+    border-radius: 12px;
+    background: rgba(29, 42, 57, 0.56);
+}
+
+.delete-title {
+    margin: 0 0 0.35rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #c5d7eb;
+    font-weight: 700;
+}
+
+.delete-actions {
+    margin-top: 0.65rem;
+    display: flex;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+}
+
+.delete-button {
+    border: 1px solid rgba(189, 126, 141, 0.6);
+    background: rgba(98, 42, 54, 0.86);
+    color: #f0f2f7;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 0.5rem 0.8rem;
+    cursor: pointer;
+}
+
+.cancel-button {
+    border: 1px solid rgba(153, 177, 204, 0.5);
+    background: rgba(34, 46, 62, 0.82);
+    color: #dbe7f5;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 0.5rem 0.8rem;
+    cursor: pointer;
+}
+
+.delete-button:disabled,
+.cancel-button:disabled {
+    opacity: 0.58;
+    cursor: not-allowed;
 }
 
 @keyframes page-in {
@@ -207,5 +324,9 @@ h3 {
     .competition-table td {
         padding: 0.62rem 0.66rem;
         font-size: 0.9rem;
+    }
+
+    .add-form {
+        padding: 0.7rem;
     }
 }
