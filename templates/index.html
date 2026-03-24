@@ -69,6 +69,24 @@
                 <button class="delete-button" id="delete-btn" type="button" disabled>Delete competitor</button>
                 <button class="cancel-button" id="cancel-delete-btn" type="button" disabled>Cancel</button>
             </div>
+
+            <form class="edit-form hidden" id="edit-form" aria-label="Edit competitor form">
+                <label>
+                    Competitor Name
+                    <input id="edit-name" type="text" required>
+                </label>
+                <label>
+                    City
+                    <input id="edit-city" type="text" required>
+                </label>
+                <label>
+                    State
+                    <input id="edit-state" type="text" required>
+                </label>
+                <div class="form-actions edit-actions">
+                    <button class="submit-button" type="submit">Save edit</button>
+                </div>
+            </form>
         </section>
         {% else %}
         <div class="empty-state">
@@ -87,6 +105,10 @@
     const selectedCompetitor = document.getElementById("selected-competitor");
     const deleteBtn = document.getElementById("delete-btn");
     const cancelDeleteBtn = document.getElementById("cancel-delete-btn");
+    const editForm = document.getElementById("edit-form");
+    const editName = document.getElementById("edit-name");
+    const editCity = document.getElementById("edit-city");
+    const editState = document.getElementById("edit-state");
 
     let selectedCompetitorId = null;
 
@@ -126,6 +148,10 @@
             deletePanel.classList.remove("hidden");
             deleteBtn.disabled = false;
             cancelDeleteBtn.disabled = false;
+            editName.value = row.dataset.name || "";
+            editCity.value = row.dataset.city || "";
+            editState.value = row.dataset.state || "";
+            editForm.classList.remove("hidden");
         });
     }
 
@@ -162,6 +188,45 @@
 
     document.querySelectorAll(".competitor-row").forEach((row) => bindCompetitorRow(row));
 
+    editForm?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!selectedCompetitorId) {
+            return;
+        }
+
+        const selectedRow = document.querySelector(`.competitor-row[data-id="${selectedCompetitorId}"]`);
+        if (!selectedRow) {
+            return;
+        }
+
+        const updatedName = editName.value.trim();
+        const updatedCity = editCity.value.trim();
+        const updatedState = editState.value.trim();
+
+        payload = {
+            id: selectedCompetitorId,
+            name: updatedName,
+            city: updatedCity,
+            state: updatedState
+        }
+        try {
+            const response = await fetch("/edit_competitor", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error("Request failed");
+            }
+            window.location.reload();
+        } catch (error) {
+            console.log(error);
+        }
+    });
+
     deleteBtn?.addEventListener("click", async () => {
         if (!selectedCompetitorId) {
             return;
@@ -190,6 +255,8 @@
         deletePanel.classList.add("hidden");
         deleteBtn.disabled = true;
         cancelDeleteBtn.disabled = true;
+        editForm.classList.add("hidden");
+        editNote.textContent = "";
         document.querySelectorAll(".competitor-row").forEach((r) => r.classList.remove("row-selected"));
     });
 </script>

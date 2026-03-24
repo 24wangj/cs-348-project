@@ -58,7 +58,26 @@ def add_competitor():
 def delete_competitor():
     data = request.get_json() or {}
     competitor_id = data["id"]
-    db.session.delete(db.session.query(Competitor).filter(Competitor.id == competitor_id).first())
+
+    competitor = db.session.query(Competitor).filter(Competitor.id == competitor_id).first()
+    db.session.delete(competitor)
+    db.session.commit()
+
+    return jsonify({}), 201
+
+@app.route('/edit_competitor', methods=['PUT'])
+def edit_competitor():
+    data = request.get_json() or {}
+    competitor_id = data["id"]
+    new_name = data["name"]
+    new_city = data["city"]
+    new_state = data["state"]
+
+    competitor = db.session.query(Competitor).filter(Competitor.id == competitor_id).first()
+    competitor.name = new_name
+    competitor.city = new_city
+    competitor.state = new_state
+
     db.session.commit()
 
     return jsonify({}), 201

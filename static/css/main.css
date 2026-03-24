@@ -280,6 +280,44 @@ h3 {
     cursor: pointer;
 }
 
+.edit-form {
+    margin-top: 0.8rem;
+    display: grid;
+    gap: 0.65rem;
+    padding: 0.8rem;
+    border: 1px solid rgba(130, 153, 180, 0.4);
+    border-radius: 10px;
+    background: rgba(22, 31, 42, 0.65);
+}
+
+.edit-form label {
+    display: grid;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+    color: #d2dfef;
+    font-weight: 600;
+}
+
+.edit-form input {
+    border: 1px solid rgba(146, 168, 193, 0.45);
+    background: rgba(14, 21, 30, 0.72);
+    color: var(--text-main);
+    border-radius: 8px;
+    padding: 0.5rem 0.6rem;
+}
+
+.edit-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.edit-note {
+    margin: 0;
+    color: #cfdced;
+    font-size: 0.88rem;
+}
+
 .delete-button:disabled,
 .cancel-button:disabled {
     opacity: 0.58;
