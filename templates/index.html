@@ -6,25 +6,26 @@
 <main class="page">
     <header class="hero">
         <p class="kicker">Unofficial WCA Tracker</p>
-        <h1>Rubik's Cube Competitors</h1>
-        <p class="subtitle">Add, edit, and delete competitors currently loaded from the database.</p>
+        <h1>Rubik's Cube Stats</h1>
+        <p class="subtitle">Add, edit, and delete competitors currently loaded from the database. Add and filter
+            competitor results.</p>
         <div class="hero-actions">
-            <button class="seed-button" id="seed-btn" type="button">Seed demo competitors</button>
+            <button class="seed-button" id="seed-btn" type="button">Seed demo data</button>
             <button class="add-button" id="add-btn" type="button">Add competitor</button>
         </div>
 
         <form class="add-form hidden" id="add-form" aria-label="Add competitor form">
             <label>
                 Competitor Name
-                <input id="add-name" type="text" placeholder="Ava Kim" required>
+                <input id="add-name" type="text" placeholder="Max Park" required>
             </label>
             <label>
                 City
-                <input id="add-city" type="text" placeholder="Columbus" required>
+                <input id="add-city" type="text" placeholder="Cerritos" required>
             </label>
             <label>
                 State
-                <input id="add-state" type="text" placeholder="Indiana" required>
+                <input id="add-state" type="text" placeholder="California" required>
             </label>
             <div class="form-actions">
                 <button class="submit-button" type="submit">Save</button>
@@ -68,6 +69,7 @@
             <div class="delete-actions">
                 <button class="delete-button" id="delete-btn" type="button" disabled>Delete competitor</button>
                 <button class="cancel-button" id="cancel-delete-btn" type="button" disabled>Cancel</button>
+                <button class="submit-button" id="results-btn" type="button" disabled>Add results</button>
             </div>
 
             <form class="edit-form hidden" id="edit-form" aria-label="Edit competitor form">
@@ -91,9 +93,92 @@
         {% else %}
         <div class="empty-state">
             <h3>No competitors yet</h3>
-            <p>Use the seed button above to load sample competitors and refresh this page.</p>
         </div>
         {% endif %}
+    </section>
+
+    <section class="panel" aria-label="Competitions list">
+        <div class="panel-head">
+            <h2>All Competitions</h2>
+        </div>
+
+        {% if competitions %}
+        <div class="table-wrap">
+            <table class="competitor-table">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Competition</th>
+                        <th scope="col">City</th>
+                        <th scope="col">State</th>
+                        <th scope="col">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for competition in competitions %}
+                    <tr>
+                        <td>{{ competition.id }}</td>
+                        <td>{{ competition.name }}</td>
+                        <td>{{ competition.city }}</td>
+                        <td>{{ competition.state }}</td>
+                        <td>{{ competition.date if competition.date else "-" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h3>No competitions yet</h3>
+        </div>
+        {% endif %}
+    </section>
+
+    <section class="panel" aria-label="Results list">
+        <div class="panel-head">
+            <h2>Filter Results</h2>
+        </div>
+
+        <form class="edit-form" id="results-filter-form" aria-label="Results filter form">
+            <label for="results-competition-id">
+                Competition
+                <select id="results-competition-id" name="competition_id" required>
+                    <option value="-1">All competitions</option>
+                    {% for competition in competitions %}
+                    <option value="{{ competition.id }}">{{ competition.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label for="results-cutoff-time">
+                Cutoff time (seconds)
+                <input id="results-cutoff-time" name="cutoff_time" type="number" step="0.01" min="0" placeholder="5.50"
+                    required>
+            </label>
+
+            <div class="form-actions">
+                <button class="submit-button" type="submit">Show results</button>
+            </div>
+        </form>
+
+        <div class="padding"></div>
+
+        <div class="table-wrap">
+            <table class="competitor-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Competitor</th>
+                        <th scope="col">Competition</th>
+                        <th scope="col">Time</th>
+                    </tr>
+                </thead>
+                <tbody id="results-table-body"></tbody>
+            </table>
+        </div>
+
+        <div class="empty-state" id="results-empty-state">
+            <h3>Results are empty</h3>
+        </div>
     </section>
 </main>
 
@@ -105,10 +190,16 @@
     const selectedCompetitor = document.getElementById("selected-competitor");
     const deleteBtn = document.getElementById("delete-btn");
     const cancelDeleteBtn = document.getElementById("cancel-delete-btn");
+    const resultsBtn = document.getElementById("results-btn");
     const editForm = document.getElementById("edit-form");
     const editName = document.getElementById("edit-name");
     const editCity = document.getElementById("edit-city");
     const editState = document.getElementById("edit-state");
+    const resultsFilterForm = document.getElementById("results-filter-form");
+    const resultsCompetitionId = document.getElementById("results-competition-id");
+    const resultsCutoffTime = document.getElementById("results-cutoff-time");
+    const resultsTableBody = document.getElementById("results-table-body");
+    const resultsEmptyState = document.getElementById("results-empty-state");
 
     let selectedCompetitorId = null;
 
@@ -148,6 +239,7 @@
             deletePanel.classList.remove("hidden");
             deleteBtn.disabled = false;
             cancelDeleteBtn.disabled = false;
+            resultsBtn.disabled = false;
             editName.value = row.dataset.name || "";
             editCity.value = row.dataset.city || "";
             editState.value = row.dataset.state || "";
@@ -181,6 +273,51 @@
                 throw new Error("Request failed");
             }
             window.location.reload();
+        } catch (error) {
+            console.log(error);
+        }
+    });
+
+    resultsFilterForm?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const payload = {
+            competition_id: Number(resultsCompetitionId.value),
+            cutoff_time: Number(resultsCutoffTime.value)
+        };
+
+        try {
+            const response = await fetch("/filter_results", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error("Request failed");
+            }
+
+            const rows = await response.json();
+            resultsTableBody.innerHTML = "";
+
+            if (!rows.length) {
+                resultsEmptyState.classList.remove("hidden");
+                return;
+            }
+
+            rows.forEach((row) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${row.competitor}</td>
+                    <td>${row.competition}</td>
+                    <td>${row.time}</td>
+                `;
+                resultsTableBody.appendChild(tr);
+            });
+
+            resultsEmptyState.classList.add("hidden");
         } catch (error) {
             console.log(error);
         }
@@ -250,13 +387,18 @@
         }
     });
 
+    resultsBtn?.addEventListener("click", () => {
+        if (!selectedCompetitorId) return;
+        window.location.href = `/competitor/${selectedCompetitorId}/results`;
+    });
+
     cancelDeleteBtn?.addEventListener("click", () => {
         selectedCompetitorId = null;
         deletePanel.classList.add("hidden");
         deleteBtn.disabled = true;
         cancelDeleteBtn.disabled = true;
+        resultsBtn.disabled = true;
         editForm.classList.add("hidden");
-        editNote.textContent = "";
         document.querySelectorAll(".competitor-row").forEach((r) => r.classList.remove("row-selected"));
     });
 </script>

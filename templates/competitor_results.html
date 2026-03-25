@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Add Results{% endblock %}
+
+{% block body %}
+<main class="page">
+    <header class="hero">
+        <p class="kicker">Result Entry</p>
+        <h1>Add Results for {{ competitor.name }}</h1>
+        <p class="subtitle">{{ competitor.city }}, {{ competitor.state }}</p>
+    </header>
+
+    <section class="panel" aria-label="Add result form">
+        <div class="panel-head">
+            <h2>New Result</h2>
+        </div>
+
+        <form class="edit-form" id="result-form" aria-label="Add result form">
+            <label for="competition_id">
+                Competition
+                <select id="competition_id" name="competition_id" required>
+                    <option value="">Select competition</option>
+                    {% for competition in competitions %}
+                    <option value="{{ competition.id }}">
+                        {{ competition.name }} · {{ competition.city }}, {{ competition.state }}{% if competition.date
+                        %} · {{ competition.date }}{% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label for="time">
+                Time (seconds)
+                <input id="time" name="time" type="number" step="0.01" min="0" placeholder="5.66" required>
+            </label>
+
+            <div class="form-actions">
+                <button class="submit-button" type="submit">Save Result</button>
+                <a class="cancel-button" href="{{ url_for('index') }}">Back to competitors</a>
+            </div>
+        </form>
+    </section>
+</main>
+
+<script>
+    const resultForm = document.getElementById("result-form");
+
+    resultForm?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const competitionId = Number(document.getElementById("competition_id").value);
+        const competitorId = Number("{{ competitor.id }}");
+        const time = Number(document.getElementById("time").value);
+
+        const payload = {
+            competition_id: competitionId,
+            competitor_id: competitorId,
+            time: time
+        };
+
+        try {
+            const response = await fetch("/add_result", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error("Request failed");
+            }
+            window.location.reload();
+        } catch (error) {
+            console.log(error);
+        }
+    });
+</script>
+{% endblock %}

@@ -24,6 +24,10 @@ body {
     padding: 2.25rem 1rem 3rem;
 }
 
+.padding {
+    padding-block: 15px;
+}
+
 .page {
     width: min(980px, 96vw);
     margin: 0 auto;
@@ -310,12 +314,6 @@ h3 {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
-}
-
-.edit-note {
-    margin: 0;
-    color: #cfdced;
-    font-size: 0.88rem;
 }
 
 .delete-button:disabled,
