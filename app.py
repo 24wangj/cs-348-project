@@ -21,9 +21,13 @@ class Competition(db.Model):
     date = db.Column(db.String(150), nullable=True)
     
 class Result(db.Model):
-    competition_id = db.Column(db.Integer, primary_key=True)
-    competitor_id = db.Column(db.Integer, primary_key=True)
-    time = db.Column(db.Float)
+    competition_id = db.Column(db.Integer, primary_key=True, index=True)
+    competitor_id = db.Column(db.Integer, primary_key=True, index=True)
+    time = db.Column(db.Float, index=True)
+
+    __table_args__ = (
+        db.Index("ix_result_competition_time", "competition_id", "time"),
+    )
 
 @app.route('/')
 def index():
